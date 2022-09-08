@@ -5,8 +5,9 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index",
+ 
+    "prod": "cross-env NODE_ENV=prod node src/index.js",
+    "dev": "cross-env NODE_ENV=dev nodemon src/index.js",
     "test": "jest --watchAll --detectOpenHandles "
   },
   "jest": {

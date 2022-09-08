@@ -3,6 +3,7 @@
 import  express  from "express";
 import ip from 'ip';
 import path from "path";
+import con from "./config/db.js";
 import cors from "cors";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
@@ -11,12 +12,15 @@ import Response from './domain/response.js'
 import logger from './utils/logger.js';
 import HTTPStatus from './controller/patient.controller.js';
 import patientRoutes from './routes/patient.route.js';
-//import {mysql} from "./Config/db";
+import environmentToExport from "./Config/config.js";
+
 
 
 dotenv.config();
 
-const PORT = process.env.SERVER_PORT || 3000;
+
+//const PORT = process.env.SERVER_PORT || 3000;
+const PORT = environmentToExport.PORT
 
 const app = express();
 
@@ -44,7 +48,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended:true }));
 
 
-app.use('api/patients', patientRoutes);
+app.use('/patients', patientRoutes);
 app.get('/', (req, res) => res.send(new Response(HTTPStatus.OK.code, HTTPStatus.OK.status, 'patient API V1.0')));
 app.all('*', (req, res) => res.status(HTTPStatus.NOT_FOUND.code).send(new Response(HTTPStatus.NOT_FOUND.code, HTTPStatus.NOT_FOUND.status, 'Route does not exist on the server ')));
 
@@ -54,5 +58,5 @@ app.all('*', (req, res) => res.status(HTTPStatus.NOT_FOUND.code).send(new Respon
 // server
 //console.log(process.env);
 app.listen(PORT, ()=>{
-    logger.info(`server running on :${ip.address()} :  ${PORT}`);
+    logger.info(`server running on :${ip.address()} :  ${PORT} in ${environmentToExport.envName} environment `);
 });
