@@ -1,4 +1,5 @@
 import database from '../config/mysql.config.js';
+import con from "../config/db.js";
 import Response from '../domain/response.js';
 import logger from '../utils/logger.js';
 import QUERY from '../query/patient.query.js';
@@ -18,7 +19,7 @@ const HTTPStatus = {
 
 export const getPatients = (req, res)=>{
     logger.info(`${req.method} ${req.originalurl}, fetchings patients`);
-    database.query(QUERY.SELECT_PATIENTS, (error, results) =>{
+    con.query(QUERY.SELECT_PATIENTS, (error, results) =>{
         if(!results){
             res.status(HTTPStatus.OK.code).send(new Response(HTTPStatus.OK.code, HTTPStatus.OK.status, `No patients found`));
         }else{
@@ -30,7 +31,8 @@ export const getPatients = (req, res)=>{
 
 export const createPatient = (req, res)=>{
     logger.info(`${req.method} ${req.originalurl}, creating  patient`);
-    database.query(QUERY.CREATE_PATIENT, Object.values(req.body), (error, results) =>{
+    con.query(QUERY.CREATE_PATIENT, Object.values(req.body), (error, results) =>{
+        console.log("test : ",Object.values(req.body))
         if(!results){
             logger.error(error.message);
             res.status(HTTPStatus.INTERNAL_SERVER_ERROR.code).send(new Response(HTTPStatus.INTERNAL_SERVER_ERROR.code, HTTPStatus.INTERNAL_SERVER_ERROR.status, `Error occured`));
@@ -44,7 +46,7 @@ export const createPatient = (req, res)=>{
 
 export const getPatient = (req, res)=>{
     logger.info(`${req.method} ${req.originalurl}, fetchings patient`);
-    database.query(QUERY.SELECT_PATIENT, [req.params.id], (error, results) =>{
+    con.query(QUERY.SELECT_PATIENT, [req.params.id], (error, results) =>{
         if(!results[0]){
             res.status(HTTPStatus.NOT_FOUND.code).send(new Response(HTTPStatus.NOT_FOUND.code, HTTPStatus.NOT_FOUND.status, `Patient by id ${req.params.id} was not found `));
         }else{
@@ -57,7 +59,7 @@ export const getPatient = (req, res)=>{
 
 export const updatePatient = (req, res)=>{
     logger.info(`${req.method} ${req.originalurl}, fetchings patient`);
-    database.query(QUERY.SELECT_PATIENT, [req.params.id], (error, results) =>{
+    con.query(QUERY.SELECT_PATIENT, [req.params.id], (error, results) =>{
         if(!results[0]){
             res.status(HTTPStatus.NOT_FOUND.code).send(new Response(HTTPStatus.NOT_FOUND.code, HTTPStatus.NOT_FOUND.status, `Patient by id ${req.params.id} was not found `));
         }else{
@@ -79,8 +81,9 @@ export const updatePatient = (req, res)=>{
 
 export const deletePatient = (req, res)=>{
     logger.info(`${req.method} ${req.originalurl}, deleting patient`);
-    database.query(QUERY.DELETE_PATIENT, [req.params.id], (error, results) =>{
-        if(!results.affectedRows > 0){
+    con.query(QUERY.DELETE_PATIENT, [req.params.id], (error, results) =>{
+        
+        if(results.affectedRows > 0){
             res.status(HTTPStatus.OK.code).send(new Response(HTTPStatus.OK.code, HTTPStatus.OK.status, `Patient deleted`, results[0]));
         }else{
             

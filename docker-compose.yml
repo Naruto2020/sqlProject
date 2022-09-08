@@ -1,0 +1,34 @@
+version : "3.7" # spécifie la version du docker compose utiliser 
+
+services:  # definir les services/container à exécuter
+
+      
+  mysqldb: #1er service
+    image: mysql:8.0 #image à partir de laquelle on construit le container
+    container_name: mysqlcontainer
+    command: --default-authentication-plugin=mysql_native_password
+    restart: unless-stopped
+    volumes:
+      - ./dbinit/init.sql:/docker-entrypoint-initdb.d/0_init.sql
+      - $HOME/database:/var/lib/mysql
+   
+    ports:
+      - "3306:3306"
+    expose:
+      - 3306
+
+    env_file:
+      - ./.env
+    environment:
+      MySQL_DATABASE: patientsdb
+      MySQL_USER: $DB_USER
+      MySQL_PASSWORD: Steve@2022
+      #MYSQL_ROOT_PASSWORD: Yaounde@123ongola
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysqldb
+    networks:
+      - internalnet
+
+networks:
+  internalnet:
+    driver: bridge
